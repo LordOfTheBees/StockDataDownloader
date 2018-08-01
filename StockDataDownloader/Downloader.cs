@@ -38,12 +38,13 @@ namespace StockDataDownloader
                 StreamWriter file = new StreamWriter(fileStream);
                 HttpClient client = new HttpClient() { Timeout = new TimeSpan(0, 10, 0) };
 
-                int maxProgress = FromDateToInt(requestData.To) - FromDateToInt(requestData.From);
+                int maxProgress = (int)(requestData.To.Ticks - requestData.From.Ticks);
 
                 lastDateTime = new DateTime(requestData.From.Ticks);
+                SetNextDate();
+
                 while (from.Ticks <= requestData.To.Ticks)
                 {
-                    SetNextDate();
                     var response = await client.GetAsync(requestData.GetRequestUrl(from, to));
 
                     using (var stream = new StreamReader(await response.Content.ReadAsStreamAsync()))
@@ -76,7 +77,8 @@ namespace StockDataDownloader
                         lastDateTime = GetDateTime(lastLine.Split(';')[0]);
                     else
                         lastDateTime = new DateTime(to.Ticks + Day1.Ticks);
-                    ProgressUpdate?.Invoke(this, new ProgressEvent() { MaxProgress = maxProgress, CurrentProgress = FromDateToInt(from) - FromDateToInt(requestData.From), IsFinished = false });
+                    ProgressUpdate?.Invoke(this, new ProgressEvent() { MaxProgress = maxProgress, CurrentProgress = (int)(to.Ticks -requestData.From.Ticks), IsFinished = false });
+                    SetNextDate();
                 }
 
                 file.Close();
@@ -94,6 +96,8 @@ namespace StockDataDownloader
                 to = new DateTime(from.Ticks + Day1.Ticks);
             else
                 to = new DateTime(from.Ticks + Day10.Ticks);
+
+            to = to.Ticks > requestData.To.Ticks ? requestData.To : to;
         }
 
         private DateTime GetDateTime(string dateString)
