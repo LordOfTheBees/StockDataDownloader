@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsFormLibrary;
 using StockDataDownloader.Enums;
 
 namespace StockDataDownloader
@@ -24,6 +23,7 @@ namespace StockDataDownloader
             FillFields();
 
             downloader = new Downloader();
+            downloader.StatusUpdate += OnStatusUpdate;
 
             marketComboBox.SelectedIndexChanged += OnMarketSelectedIndexChanged;
             fromDateTime.ValueChanged += DateTimeOnValueChanged;
@@ -94,6 +94,14 @@ namespace StockDataDownloader
                     downloader.ProgressUpdate -= OnProgressUpdate;
                     progressBar.Value = e.MaxProgress;
                 }
+            }));
+        }
+
+        private void OnStatusUpdate(object sender, StatusEvent e)
+        {
+            this.Invoke((Action)(() =>
+            {
+                statusLabel.Text = e.StatusString;
             }));
         }
 

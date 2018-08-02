@@ -47,14 +47,16 @@
             this.label5 = new System.Windows.Forms.Label();
             this.timeFrameComboBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.fileDialogElement = new WindowsFormLibrary.FileDialogElement();
             this.label7 = new System.Windows.Forms.Label();
             this.dateFormatComboBox = new System.Windows.Forms.ComboBox();
             this.timeFormatComboBox = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.fileDialogElement = new AdditionalForms.FileDialogElement();
             this.buttonsTable = new System.Windows.Forms.TableLayoutPanel();
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.marketDateTablePanel.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
@@ -63,6 +65,7 @@
             this.tableLayoutPanel3.SuspendLayout();
             this.secondTable.SuspendLayout();
             this.buttonsTable.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -73,17 +76,18 @@
             this.tableLayoutPanel1.Controls.Add(this.progressBar, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.secondTable, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.buttonsTable, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.statusStrip, 0, 4);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(284, 268);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(284, 292);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // marketDateTablePanel
@@ -132,7 +136,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(114, 20);
             this.label4.TabIndex = 0;
-            this.label4.Text = "From";
+            this.label4.Text = "Начальная дата";
             this.label4.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // fromDateTime
@@ -181,7 +185,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(113, 20);
             this.label3.TabIndex = 0;
-            this.label3.Text = "To";
+            this.label3.Text = "Конечная дата";
             this.label3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // tableLayoutPanel4
@@ -210,7 +214,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(113, 21);
             this.label2.TabIndex = 0;
-            this.label2.Text = "Security";
+            this.label2.Text = "Цунная бумага";
             this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // securityComboBox
@@ -249,7 +253,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(114, 21);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Market";
+            this.label1.Text = "Рынок";
             this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // marketComboBox
@@ -279,11 +283,11 @@
             this.secondTable.Controls.Add(this.label5, 0, 0);
             this.secondTable.Controls.Add(this.timeFrameComboBox, 1, 0);
             this.secondTable.Controls.Add(this.label6, 0, 3);
-            this.secondTable.Controls.Add(this.fileDialogElement, 1, 3);
             this.secondTable.Controls.Add(this.label7, 0, 1);
             this.secondTable.Controls.Add(this.dateFormatComboBox, 1, 1);
             this.secondTable.Controls.Add(this.timeFormatComboBox, 1, 2);
             this.secondTable.Controls.Add(this.label8, 0, 2);
+            this.secondTable.Controls.Add(this.fileDialogElement, 1, 3);
             this.secondTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.secondTable.Location = new System.Drawing.Point(0, 103);
             this.secondTable.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
@@ -305,7 +309,7 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(142, 13);
             this.label5.TabIndex = 0;
-            this.label5.Text = "Time Frame";
+            this.label5.Text = "Таймфрейм";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // timeFrameComboBox
@@ -328,17 +332,6 @@
             this.label6.Text = "Куда сохранить";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // fileDialogElement
-            // 
-            this.fileDialogElement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileDialogElement.AutoSize = true;
-            this.fileDialogElement.DialogType = WindowsFormLibrary.FileDialogType.SaveFile;
-            this.fileDialogElement.Location = new System.Drawing.Point(145, 84);
-            this.fileDialogElement.MinimumSize = new System.Drawing.Size(0, 20);
-            this.fileDialogElement.Name = "fileDialogElement";
-            this.fileDialogElement.Size = new System.Drawing.Size(136, 20);
-            this.fileDialogElement.TabIndex = 3;
-            // 
             // label7
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -347,7 +340,7 @@
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(136, 13);
             this.label7.TabIndex = 4;
-            this.label7.Text = "Date Format";
+            this.label7.Text = "Формат даты";
             // 
             // dateFormatComboBox
             // 
@@ -375,7 +368,17 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(136, 13);
             this.label8.TabIndex = 7;
-            this.label8.Text = "Time Format";
+            this.label8.Text = "Формат времени";
+            // 
+            // fileDialogElement
+            // 
+            this.fileDialogElement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileDialogElement.Location = new System.Drawing.Point(145, 84);
+            this.fileDialogElement.MinimumSize = new System.Drawing.Size(0, 20);
+            this.fileDialogElement.Name = "fileDialogElement";
+            this.fileDialogElement.Size = new System.Drawing.Size(136, 20);
+            this.fileDialogElement.TabIndex = 8;
+            this.fileDialogElement.Type = AdditionalForms.DialogType.SaveFile;
             // 
             // buttonsTable
             // 
@@ -417,14 +420,30 @@
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = false;
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 270);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(284, 22);
+            this.statusStrip.TabIndex = 8;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(0, 17);
+            this.statusLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 268);
+            this.ClientSize = new System.Drawing.Size(284, 292);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.MaximumSize = new System.Drawing.Size(300, 307);
-            this.MinimumSize = new System.Drawing.Size(300, 307);
+            this.MaximumSize = new System.Drawing.Size(1000, 331);
+            this.MinimumSize = new System.Drawing.Size(300, 331);
             this.Name = "MainForm";
             this.Text = "Stock Data Downloader";
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -442,6 +461,8 @@
             this.secondTable.ResumeLayout(false);
             this.secondTable.PerformLayout();
             this.buttonsTable.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -467,7 +488,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox timeFrameComboBox;
         private System.Windows.Forms.Label label6;
-        private WindowsFormLibrary.FileDialogElement fileDialogElement;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox dateFormatComboBox;
         private System.Windows.Forms.ComboBox timeFormatComboBox;
@@ -475,6 +495,9 @@
         private System.Windows.Forms.TableLayoutPanel buttonsTable;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button stopButton;
+        private AdditionalForms.FileDialogElement fileDialogElement;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel statusLabel;
     }
 }
 
