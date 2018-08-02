@@ -80,7 +80,7 @@ namespace StockDataDownloader
 
             downloader.ProgressUpdate += OnProgressUpdate;
             var requestData = new RequestData(market, security, from, to, timeFrame, dateFormat, timeFormat);
-            downloader.LoadData(requestData, fileDialogElement.Path);
+            Task.Run(()=>downloader.LoadDataAsync(requestData, fileDialogElement.Path));
         }
 
         private void OnProgressUpdate(object sender, ProgressEvent e)

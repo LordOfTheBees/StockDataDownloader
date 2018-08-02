@@ -21,96 +21,99 @@ namespace StockDataDownloader
         private RequestData requestData;
 
         public event EventHandler<ProgressEvent> ProgressUpdate;
-        public event EventHandler<StatusEvent> StatusUpdate; 
+        public event EventHandler<StatusEvent> StatusUpdate;
+
+        public bool UseEvents { get; set; } = true;
 
         /// <summary>
         /// Загружает данные с биржи
         /// </summary>
-        public void LoadData(RequestData requestData, string fileName)
+        public async Task LoadDataAsync(RequestData requestData, string fileName)
         {
             this.requestData = requestData;
 
-            Task.Run(async () =>
+            int lineCounter = 0;
+            string line, lastLine = null;
+            string lastLineInFile = null;
+            bool SizeExceeded = false;
+            isStart = true;
+            var fileStream = new FileStream(fileName, FileMode.OpenOrCreate);
+            StreamWriter file = new StreamWriter(fileStream);
+            HttpClient client = new HttpClient() { Timeout = new TimeSpan(0, 10, 0) };
+
+            int maxProgress = ConvertDateTimeToInt(requestData.To) - ConvertDateTimeToInt(requestData.From);
+
+            lastDateTime = new DateTime(requestData.From.Ticks);
+            SetNextDate();
+
+            while (from.Ticks <= requestData.To.Ticks)
             {
-                int lineCounter = 0;
-                string line, lastLine = null;
-                string lastLineInFile = null;
-                bool SizeExceeded = false;
-                isStart = true;
-                var fileStream = new FileStream(fileName, FileMode.OpenOrCreate);
-                StreamWriter file = new StreamWriter(fileStream);
-                HttpClient client = new HttpClient() { Timeout = new TimeSpan(0, 10, 0) };
+                lineCounter = 0;
+                lastLine = null;
 
-                int maxProgress = ConvertDateTimeToInt(requestData.To) - ConvertDateTimeToInt(requestData.From);
-
-                lastDateTime = new DateTime(requestData.From.Ticks);
-                SetNextDate();
-
-                while (from.Ticks <= requestData.To.Ticks)
+                try
                 {
-                    lineCounter = 0;
-                    lastLine = null;
+                    if (UseEvents) StatusUpdate?.Invoke(this,
+                        new StatusEvent(
+                            $"Пакет данных загружается... {from.ToShortDateString()} - {to.ToShortDateString()}"));
+                    var response = await client.GetAsync(requestData.GetRequestUrl(from, to));
 
-                    try
+                    using (var stream = new StreamReader(await response.Content.ReadAsStreamAsync()))
                     {
-                        StatusUpdate?.Invoke(this,
-                            new StatusEvent(
-                                $"Пакет данных загружается... {from.ToShortDateString()} - {to.ToShortDateString()}"));
-                        var response = await client.GetAsync(requestData.GetRequestUrl(from, to));
-
-                        using (var stream = new StreamReader(await response.Content.ReadAsStreamAsync()))
+                        if (UseEvents) StatusUpdate?.Invoke(this, new StatusEvent("Пакет данных сохраняется в файл"));
+                        while (!string.IsNullOrEmpty(line = stream.ReadLine()))
                         {
-                            StatusUpdate?.Invoke(this, new StatusEvent("Пакет данных сохраняются в файл"));
-                            while (!string.IsNullOrEmpty(line = stream.ReadLine()))
+                            if (!checkFormatter.IsMatch(line)) continue;
+
+                            if (SizeExceeded)
                             {
-                                if (!checkFormatter.IsMatch(line)) continue;
-
-                                if (SizeExceeded)
-                                {
-                                    //читаем строчки в потоке до тех пор, пока не попадётся последняя записанная в файл
-                                    if (line == lastLineInFile)
-                                        SizeExceeded = false;
-                                    continue;
-                                }
-
-                                lineCounter++;
-                                lastLine = line;
-                                lastLineInFile = line;
-                                file.WriteLine(line);
+                                //читаем строчки в потоке до тех пор, пока не попадётся последняя записанная в файл
+                                if (line == lastLineInFile)
+                                    SizeExceeded = false;
+                                continue;
                             }
+
+                            lineCounter++;
+                            lastLine = line;
+                            lastLineInFile = line;
+                            file.WriteLine(line);
                         }
                     }
-                    catch (Exception e)
-                    {
-                        StatusUpdate?.Invoke(this, new StatusEvent("Произошла ошибка!"));
-                        MessageBox.Show($"{e.Message}\n\n{e.StackTrace}", "Error");
-                    }
-
-                    if (!string.IsNullOrEmpty(lastLine)) lastLineInFile = lastLine;
-
-
-                    SizeExceeded = lineCounter >= 990000; //Около миллиона
-
-                    if (lastLine == null) //Случаи выходных или праздничных дней
-                        lastDateTime = new DateTime(to.Ticks + Day1.Ticks);
-                    else if (SizeExceeded) //Случай, когда особый ажиотаж на рынке
-                        lastDateTime = GetDateTime(lastLine.Split(';')[0]);
-                    else
-                        lastDateTime = new DateTime(to.Ticks + Day1.Ticks);
-                    ProgressUpdate?.Invoke(this,
-                        new ProgressEvent()
-                        {
-                            MaxProgress = maxProgress,
-                            CurrentProgress = ConvertDateTimeToInt(to) - ConvertDateTimeToInt(requestData.From),
-                            IsFinished = false
-                        });
-                    SetNextDate();
+                }
+                catch (Exception e)
+                {
+                    if (UseEvents) StatusUpdate?.Invoke(this, new StatusEvent("Произошла ошибка!"));
+                    MessageBox.Show($"{e.Message}\n\n{e.StackTrace}", "Error");
                 }
 
-                file.Close();
-                ProgressUpdate?.Invoke(this, new ProgressEvent() { MaxProgress = 100, CurrentProgress = 100, IsFinished = true });
-                StatusUpdate?.Invoke(this, new StatusEvent("Процесс загрузки данных закончен"));
-            });
+                if (!string.IsNullOrEmpty(lastLine)) lastLineInFile = lastLine;
+
+
+                SizeExceeded = lineCounter >= 990000; //Около миллиона
+
+                if (lastLine == null) //Случаи выходных или праздничных дней
+                    lastDateTime = new DateTime(to.Ticks + Day1.Ticks);
+                else if (SizeExceeded) //Случай, когда особый ажиотаж на рынке
+                    lastDateTime = GetDateTime(lastLine.Split(';')[0]);
+                else
+                    lastDateTime = new DateTime(to.Ticks + Day1.Ticks);
+
+
+                if (UseEvents) ProgressUpdate?.Invoke(this,
+                    new ProgressEvent()
+                    {
+                        MaxProgress = maxProgress,
+                        CurrentProgress = ConvertDateTimeToInt(to) - ConvertDateTimeToInt(requestData.From),
+                        IsFinished = false
+                    });
+
+                SetNextDate();
+            }
+
+            file.Close();
+
+            if (UseEvents) ProgressUpdate?.Invoke(this, new ProgressEvent() { MaxProgress = 100, CurrentProgress = 100, IsFinished = true });
+            if (UseEvents) StatusUpdate?.Invoke(this, new StatusEvent("Процесс загрузки данных закончен"));
         }
 
         private void SetNextDate()
